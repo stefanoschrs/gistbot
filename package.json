@@ -1,0 +1,13 @@
+{
+	"name": "gistbot",
+	"version": "0.0.1",
+	"description": "Github GIST bot",
+	"main": "gistbot.js",
+	"scripts": {},
+	"repository":{
+		"type": "git",
+		"url": "git@github.com:stefanoschrs/gistbot.git"
+	},
+	"author": "Stefanos Chrs <stefanoschrs@hotmail.com> (http://www.stfnstudios.com/)",
+	"license": "MIT"
+}
