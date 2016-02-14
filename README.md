@@ -2,7 +2,7 @@
 
 Usage
 -
-`node gist-bot.js [options]`
+`node gistbot.js [options]`
 
 Options
 -
