@@ -1,4 +1,4 @@
 module.exports = {
 	clientId: 'xxx',
-	clientSecret: 'xxx'
+	clientSecret: 'yyy'
 };

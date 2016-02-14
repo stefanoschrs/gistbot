@@ -32,7 +32,12 @@ function isGistNew(id, done){
 		});
 	}
 	else{
-		return done(cache.indexOf(id) === -1 ? 1 : 0);
+		if(cache.indexOf(id) === -1){
+			cache.push(id);
+			return done(1);
+		}
+		
+		return done(0);
 	}
 }
 
@@ -43,14 +48,8 @@ function fetchData () {
 			data+=d;
 		});
 		res.on('end', () => {
-			try{
-				data = JSON.parse(data);
-			}
-			catch(e){
-				console.log(data)
-				throw e;
-			}
-			console.log(data)
+			data = JSON.parse(data);
+			if(data.message) return;
 
 			var filtered = data.filter((el)=>{
 				var flag = false;
