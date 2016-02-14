@@ -1,9 +1,18 @@
 const https = require('https');
 const fs = require('fs');
 
-const config = require('./config');
 const date = `${(new Date()).getDate()}-${(new Date()).getMonth()}-${(new Date()).getFullYear()}`;
 
+var config;
+try{
+	config = require('./config');
+}
+catch(e){
+	config = {
+		clientId: 'xxx',
+		clientSecret: 'yyy'
+	};
+}
 var languages = 'JavaScript,Shell';
 var interval = 30000;
 var lineWidth = 80;
@@ -57,7 +66,7 @@ function fetchData () {
 					if(languages.split(',').indexOf(el.files[file].language) !== -1){
 						flag = true;
 					}
-				})
+				});
 				return flag;
 			});
 			filtered.forEach((gist)=>{
@@ -73,7 +82,7 @@ function fetchData () {
 						console.log(`${gist.description}${' '.repeat(lineWidth - gist.description.length)} (${gist.html_url})`);
 					}
 				});
-			})
+			});
 		});
 	});
 	req.end();
@@ -91,7 +100,7 @@ function help(){
 	console.log('\t-h            print this message');
 	console.log('\t-l LANGUAGES  comma separated languages to watch for');
 	console.log('\t-i INTERVAL   seconds between each poll');
-	console.log('\t-f            save in file instead of memory');
+	console.log('\t-f            save ids in a file instead of memory');
 
 	process.exit();
 }
@@ -112,6 +121,8 @@ function error(type){
 }
 
 function main(){
+	var value;
+	
 	process.argv.shift();
 	process.argv.shift();
 
@@ -119,14 +130,14 @@ function main(){
 	if(process.argv.indexOf('-v') !== -1) return version();
 
 	if(process.argv.indexOf('-l') !== -1){
-		var value = process.argv[process.argv.indexOf('-l')+1];
+		value = process.argv[process.argv.indexOf('-l')+1];
 		if(!value) return error(0);
 
 		languages = value;
 	}
 
 	if(process.argv.indexOf('-i') !== -1){
-		var value = process.argv[process.argv.indexOf('-i')+1];
+		value = process.argv[process.argv.indexOf('-i')+1];
 		if(!value || !/^[0-9]+$/.test(value)) return error(0);
 
 		interval = parseInt(value)*1000;
@@ -136,6 +147,7 @@ function main(){
 		filesystem = 1;
 	}
 
+	fetchData();
 	setInterval(fetchData, interval);
 }
 
