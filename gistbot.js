@@ -73,7 +73,7 @@ function fetchData () {
 				isGistNew(gist.id, (itsNew)=>{
 					if(!itsNew) return;
 
-					gist.description = gist.description.replace(/\n/g, ' ');
+					gist.description = (gist.description || 'No Description Available').replace(/\n/g, ' ');
 					if(gist.description.length > lineWidth){
 						gist.description = gist.description.slice(0, lineWidth);
 						console.log(`${gist.description} (${gist.html_url})`);
