@@ -1,6 +1,6 @@
 {
 	"name": "gistbot",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Github GIST bot",
 	"main": "gistbot.js",
 	"scripts": {},

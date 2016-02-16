@@ -10,12 +10,14 @@ Options
 Print gistbot version  
 - **-h**  
 Print help message  
+- **-f**  
+Save the ids in a file instead of memory  
 - **-l LANGUAGE**  
 Comma separated languages to watch for e.g JavaScript,Shell,Java,Python  
 - **-i INTERVAL**  
 Seconds between each poll  
-- **-f**  
-Save the ids in a file instead of memory  
+- **-r FILENAME**  
+File containing one regex/line to check in the raw files  
 
 TIPS
 -
@@ -23,8 +25,18 @@ TIPS
 `module.exports = { clientId: 'xxx', clientSecret: 'yyy' };`
 - Fetch a gist using it's id `https://api.github.com/gists/<gistId>`
 
+TODO
+-
+- Find a better way to store the regex findings
+- Add database support
+- Add callback url support to post results to a webserver
+
 Releases
 -
+*0.0.2*
+- Added *Regular Expression Watcher* option
+- Minor bugfixes
+
 *0.0.1*
 - Basic functionality with in-memory and file storage options
 

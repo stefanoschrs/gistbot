@@ -1,0 +1,4 @@
+pass[word]+\s*[:=]\s*["']
+client(Id|_id|Secret|_secret)\s*[:=]\s*["']
+access(Token|_token)\s*[:=]\s*["']
+consumet(Key|_key|Secret|_secret)\s*[:=]\s*["']

@@ -13,10 +13,11 @@ catch(e){
 		clientSecret: 'yyy'
 	};
 }
-var languages = 'JavaScript,Shell';
+var languages = '';
 var interval = 30000;
 var lineWidth = 80;
 var filesystem = 0;
+var regularExpressions = [];
 var cache = [];
 var options = {
 	hostname: 'api.github.com',
@@ -28,6 +29,48 @@ var options = {
 		'Accept': 'application/json'
 	}
 };
+
+function digForRegex(files){
+	var foundMatch = function(file, regex, data){
+		var filename = regex.replace('https://gist.githubusercontent.com/', '').replace(/\W/g, '');
+		fs.stat(`data/${filename}`, function(err, stats){
+			if(err){
+				fs.mkdirSync(`data/${filename}`);
+				fs.stat(`data/${filename}/${file.replace(/\//g, '+')}`, function(err, stats){
+					if(err){
+						fs.writeFileSync(`data/${filename}/${file.replace(/\//g, '+')}`, data, 'utf8');
+					}
+				});
+			}
+			else{
+				fs.stat(`data/${filename}/${file.replace(/\//g, '+')}`, function(err, stats){
+					if(err){
+						fs.writeFileSync(`data/${filename}/${file.replace(/\//g, '+')}`, data, 'utf8');
+					}
+				});
+			}
+		});
+	};
+	files.forEach((file)=>{
+		var req = https.get(file, (res) => {
+			var data = '';
+			res.on('data', (d) => {
+				data+=d;
+			});
+			res.on('end', () => {
+				for (var i = 0; i < regularExpressions.length; i++) {
+					if(data.match(new RegExp(regularExpressions[i], 'i'))){
+						foundMatch(file, regularExpressions[i], data);
+					}
+				}
+			});
+		});
+		req.end();
+		req.on('error', (e) => {
+			console.error(`Error fetching gist ${file}. ${e}`);
+		});
+	});
+}
 
 function isGistNew(id, done){
 	if(filesystem){
@@ -61,8 +104,10 @@ function fetchData () {
 			if(data.message) return;
 
 			var filtered = data.filter((el)=>{
+				if(!languages) return true;
+				
 				var flag = false;
-				Object.keys(el.files).forEach((file)=>{					
+				Object.keys(el.files).forEach((file)=>{
 					if(languages.split(',').indexOf(el.files[file].language) !== -1){
 						flag = true;
 					}
@@ -81,6 +126,12 @@ function fetchData () {
 					else{
 						console.log(`${gist.description}${' '.repeat(lineWidth - gist.description.length)} (${gist.html_url})`);
 					}
+
+					if(regularExpressions.length){
+						digForRegex(Object.keys(gist.files).map((el)=>{
+							return gist.files[el].raw_url;
+						}));
+					}
 				});
 			});
 		});
@@ -98,9 +149,10 @@ function help(){
 	console.log('Options:');
 	console.log('\t-v            print gistbot version');
 	console.log('\t-h            print this message');
+	console.log('\t-f            save ids in a file instead of memory');
 	console.log('\t-l LANGUAGES  comma separated languages to watch for');
 	console.log('\t-i INTERVAL   seconds between each poll');
-	console.log('\t-f            save ids in a file instead of memory');
+	console.log('\t-r FILENAME   file containing one regex/line to check in the raw files');
 
 	process.exit();
 }
@@ -145,6 +197,18 @@ function main(){
 
 	if(process.argv.indexOf('-f') !== -1){				
 		filesystem = 1;
+	}
+
+	if(process.argv.indexOf('-r') !== -1){
+		value = process.argv[process.argv.indexOf('-r')+1];
+		if(!value) return error(0);
+
+
+		fs.readFile(value, 'utf8', (err, res)=>{
+			if(err) return error(0);
+
+			regularExpressions = res.split('\n');
+		});
 	}
 
 	fetchData();
