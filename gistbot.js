@@ -13,11 +13,9 @@ catch(e){
 		clientSecret: 'yyy'
 	};
 }
-var languages = '';
-var interval = 30000;
-var lineWidth = 80;
-var filesystem = 0;
-var regularExpressions = [];
+
+/** .gistbotrc variables */
+var loglevel, interval, lineWidth, languages, regularExpressions, storageType;
 var cache = [];
 var options = {
 	hostname: 'api.github.com',
@@ -72,11 +70,11 @@ function digForRegex(files){
 	});
 }
 
-function isGistNew(id, done){
-	if(filesystem){
-		fs.readFile(`data/gistbot-${date}.txt`, 'utf8', function(err, res){
-			if(err || res.indexOf(id) === -1){
-				fs.appendFileSync(`data/gistbot-${date}.txt`, id+'\n');
+function isGistNew(gist, done){
+	if(storageType === 'filesystem'){
+		fs.readFile(`data/gistbot-${date}.tsv`, 'utf8', function(err, res){
+			if(err || res.indexOf(gist.id) === -1){
+				fs.appendFileSync(`data/gistbot-${date}.tsv`, `${gist.id}\t${gist.owner ? gist.owner.login : 'anonymous'}\t${gist.description}\n`);
 				return done(1);
 			}
 
@@ -84,8 +82,8 @@ function isGistNew(id, done){
 		});
 	}
 	else{
-		if(cache.indexOf(id) === -1){
-			cache.push(id);
+		if(cache.indexOf(gist.id) === -1){
+			cache.push(gist.id);
 			return done(1);
 		}
 		
@@ -104,27 +102,27 @@ function fetchData () {
 			if(data.message) return;
 
 			var filtered = data.filter((el)=>{
-				if(!languages) return true;
+				if(!languages.length) return true;
 				
 				var flag = false;
 				Object.keys(el.files).forEach((file)=>{
-					if(languages.split(',').indexOf(el.files[file].language) !== -1){
+					if(languages.indexOf(el.files[file].language) !== -1){
 						flag = true;
 					}
 				});
 				return flag;
 			});
 			filtered.forEach((gist)=>{
-				isGistNew(gist.id, (itsNew)=>{
+				isGistNew(gist, (itsNew)=>{
 					if(!itsNew) return;
 
 					gist.description = (gist.description || 'No Description Available').replace(/\n/g, ' ');
 					if(gist.description.length > lineWidth){
 						gist.description = gist.description.slice(0, lineWidth);
-						console.log(`${gist.description} (${gist.html_url})`);
+						loglevel && console.log(`${gist.description} (${gist.html_url})`);
 					}
 					else{
-						console.log(`${gist.description}${' '.repeat(lineWidth - gist.description.length)} (${gist.html_url})`);
+						loglevel && console.log(`${gist.description}${' '.repeat(lineWidth - gist.description.length)} (${gist.html_url})`);
 					}
 
 					if(regularExpressions.length){
@@ -143,20 +141,6 @@ function fetchData () {
 	});
 }
 
-function help(){
-	console.log('Usage: node gist-bot.js [options]');
-	console.log('');
-	console.log('Options:');
-	console.log('\t-v            print gistbot version');
-	console.log('\t-h            print this message');
-	console.log('\t-f            save ids in a file instead of memory');
-	console.log('\t-l LANGUAGES  comma separated languages to watch for');
-	console.log('\t-i INTERVAL   seconds between each poll');
-	console.log('\t-r FILENAME   file containing one regex/line to check in the raw files');
-
-	process.exit();
-}
-
 function version(){
 	fs.readFile('./package.json', 'utf8', (err, res)=>{
 		console.log(JSON.parse(res).version);
@@ -164,55 +148,39 @@ function version(){
 	});
 }
 
-function error(type){
-	if(type === 0){
-		console.log('Wrong arguments or missing..');
-	}
-
-	process.exit();
-}
-
 function main(){
-	var value;
-	
-	process.argv.shift();
-	process.argv.shift();
+	fs.readFile('.gistbotrc', 'utf8', function(err, res){
+		if(err){
+			console.log('Error: Can\'t find .gistbotrc file..');
+			process.exit();
+		}
+		var rc = JSON.parse(res); // Temporary solution until es6 array desctructing comes
+		loglevel = rc.loglevel;
+		interval = rc.interval;
+		lineWidth = rc.lineWidth;
+		languages = rc.languages;		
+		storageType = rc.storageType;
+		if(rc.regexPath){
+			try{
+				regularExpressions = fs.readFileSync(rc.regexPath, 'utf8');
+				regularExpressions = regularExpressions.split('\n');
+			}
+			catch(e){
+				console.log('Error: Can\'t open file');
+				process.exit();
+			}
+		}
+		else{
+			regularExpressions = [];
+		}
 
-	if(process.argv.indexOf('-h') !== -1) return help();
-	if(process.argv.indexOf('-v') !== -1) return version();
+		process.argv.shift();
+		process.argv.shift();
+		if(process.argv.indexOf('-v') !== -1) return version();
 
-	if(process.argv.indexOf('-l') !== -1){
-		value = process.argv[process.argv.indexOf('-l')+1];
-		if(!value) return error(0);
-
-		languages = value;
-	}
-
-	if(process.argv.indexOf('-i') !== -1){
-		value = process.argv[process.argv.indexOf('-i')+1];
-		if(!value || !/^[0-9]+$/.test(value)) return error(0);
-
-		interval = parseInt(value)*1000;
-	}
-
-	if(process.argv.indexOf('-f') !== -1){				
-		filesystem = 1;
-	}
-
-	if(process.argv.indexOf('-r') !== -1){
-		value = process.argv[process.argv.indexOf('-r')+1];
-		if(!value) return error(0);
-
-
-		fs.readFile(value, 'utf8', (err, res)=>{
-			if(err) return error(0);
-
-			regularExpressions = res.split('\n');
-		});
-	}
-
-	fetchData();
-	setInterval(fetchData, interval);
+		fetchData();
+		setInterval(fetchData, interval);		
+	});
 }
 
 main();

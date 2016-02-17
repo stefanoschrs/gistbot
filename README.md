@@ -1,23 +1,17 @@
-# **Github GIST bot**
+# ![Github Gist Bot](logo.jpg)
 
 Usage
 -
-`node gistbot.js [options]`
+`node gistbot.js`
 
-Options
+Options (.gistbotrc)  
 -
-- **-v**  
-Print gistbot version  
-- **-h**  
-Print help message  
-- **-f**  
-Save the ids in a file instead of memory  
-- **-l LANGUAGE**  
-Comma separated languages to watch for e.g JavaScript,Shell,Java,Python  
-- **-i INTERVAL**  
-Seconds between each poll  
-- **-r FILENAME**  
-File containing one regex/line to check in the raw files  
+- `loglevel` 0 for no logging and 1 for logging
+- `interval` Seconds between each fetch
+- `lineWidth` How many characters to print from the gist description
+- `languages` What languages to watch for. Empty array to watch all
+- `regexPath` Filename for the regular expressions file that contains one regex per line
+- `storageType` Empty to store in memory or 'filesystem' to store in files
 
 TIPS
 -
@@ -33,6 +27,10 @@ TODO
 
 Releases
 -
+*0.0.3*
+- Move options to rc file  
+- Add username and description to the log tsv  
+
 *0.0.2*
 - Added *Regular Expression Watcher* option
 - Minor bugfixes

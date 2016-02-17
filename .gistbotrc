@@ -1,0 +1,8 @@
+{
+	"loglevel": 1,
+	"interval": 10000,
+	"lineWidth": 80,
+	"languages": [],
+	"regexPath": "regex.txt",
+	"storageType": "filesystem"
+}
