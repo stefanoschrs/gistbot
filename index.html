@@ -31,42 +31,30 @@
       </header>
       <section>
         <h1>
-<a id="github-gist-bot" class="anchor" href="#github-gist-bot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>Github GIST bot</strong>
+<a id="" class="anchor" href="#" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><img src="logo.jpg" alt="Github Gist Bot">
 </h1>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
-<p><code>node gistbot.js [options]</code></p>
+<p><code>node gistbot.js</code></p>
 
 <h2>
-<a id="options" class="anchor" href="#options" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Options</h2>
+<a id="options-gistbotrc--" class="anchor" href="#options-gistbotrc--" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Options (.gistbotrc)  </h2>
 
 <ul>
 <li>
-<strong>-v</strong><br>
-Print gistbot version<br>
-</li>
+<code>loglevel</code> 0 for no logging and 1 for logging</li>
 <li>
-<strong>-h</strong><br>
-Print help message<br>
-</li>
+<code>interval</code> Seconds between each fetch</li>
 <li>
-<strong>-f</strong><br>
-Save the ids in a file instead of memory<br>
-</li>
+<code>lineWidth</code> How many characters to print from the gist description</li>
 <li>
-<strong>-l LANGUAGE</strong><br>
-Comma separated languages to watch for e.g JavaScript,Shell,Java,Python<br>
-</li>
+<code>languages</code> What languages to watch for. Empty array to watch all</li>
 <li>
-<strong>-i INTERVAL</strong><br>
-Seconds between each poll<br>
-</li>
+<code>regexPath</code> Filename for the regular expressions file that contains one regex per line</li>
 <li>
-<strong>-r FILENAME</strong><br>
-File containing one regex/line to check in the raw files<br>
-</li>
+<code>storageType</code> Empty to store in memory or 'filesystem' to store in files</li>
 </ul>
 
 <h2>
@@ -91,6 +79,15 @@ File containing one regex/line to check in the raw files<br>
 
 <h2>
 <a id="releases" class="anchor" href="#releases" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Releases</h2>
+
+<p><em>0.0.3</em></p>
+
+<ul>
+<li>Move options to rc file<br>
+</li>
+<li>Add username and description to the log tsv<br>
+</li>
+</ul>
 
 <p><em>0.0.2</em></p>
 
