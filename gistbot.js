@@ -1,3 +1,4 @@
+const RegexDigger = require('./regexDigger');
 const https = require('https');
 const fs = require('fs');
 
@@ -28,48 +29,6 @@ var options = {
 	}
 };
 
-function digForRegex(files){
-	var foundMatch = function(file, regex, data){
-		var filename = regex.replace('https://gist.githubusercontent.com/', '').replace(/\W/g, '');
-		fs.stat(`data/${filename}`, function(err, stats){
-			if(err){
-				fs.mkdirSync(`data/${filename}`);
-				fs.stat(`data/${filename}/${file.replace(/\//g, '+')}`, function(err, stats){
-					if(err){
-						fs.writeFileSync(`data/${filename}/${file.replace(/\//g, '+')}`, data, 'utf8');
-					}
-				});
-			}
-			else{
-				fs.stat(`data/${filename}/${file.replace(/\//g, '+')}`, function(err, stats){
-					if(err){
-						fs.writeFileSync(`data/${filename}/${file.replace(/\//g, '+')}`, data, 'utf8');
-					}
-				});
-			}
-		});
-	};
-	files.forEach((file)=>{
-		var req = https.get(file, (res) => {
-			var data = '';
-			res.on('data', (d) => {
-				data+=d;
-			});
-			res.on('end', () => {
-				for (var i = 0; i < regularExpressions.length; i++) {
-					if(data.match(new RegExp(regularExpressions[i], 'i'))){
-						foundMatch(file, regularExpressions[i], data);
-					}
-				}
-			});
-		});
-		req.end();
-		req.on('error', (e) => {
-			console.error(`Error fetching gist ${file}. ${e}`);
-		});
-	});
-}
-
 function isGistNew(gist, done){
 	if(storageType === 'filesystem'){
 		fs.readFile(`data/gistbot-${date}.tsv`, 'utf8', function(err, res){
@@ -91,7 +50,7 @@ function isGistNew(gist, done){
 	}
 }
 
-function fetchData () {
+function fetchData() {
 	var req = https.request(options, (res) => {
 		var data = '';
 		res.on('data', (d) => {
@@ -126,9 +85,12 @@ function fetchData () {
 					}
 
 					if(regularExpressions.length){
-						digForRegex(Object.keys(gist.files).map((el)=>{
-							return gist.files[el].raw_url;
-						}));
+						RegexDigger.start({
+							files: Object.keys(gist.files).map((el)=>{
+								return gist.files[el].raw_url;
+							}),
+							regularExpressions: regularExpressions
+						});
 					}
 				});
 			});
@@ -174,8 +136,6 @@ function main(){
 			regularExpressions = [];
 		}
 
-		process.argv.shift();
-		process.argv.shift();
 		if(process.argv.indexOf('-v') !== -1) return version();
 
 		fetchData();

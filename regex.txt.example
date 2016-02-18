@@ -1,0 +1,4 @@
+pass[word]+\s*[:=]\s*["']
+DB_PASSWORD
+mysql[i]._connect\(["']
+client(Id|_id|Secret|_secret)\s*[:=]\s*["']

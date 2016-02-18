@@ -1,4 +1,4 @@
-# ![Github Gist Bot](logo.jpg)
+# ![Github Gist Bot](https://res.cloudinary.com/dkxp3eifs/image/upload/c_scale,w_500/v1455829505/gistbot/gistbot_logo.png)
 
 Usage
 -
