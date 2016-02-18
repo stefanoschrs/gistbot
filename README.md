@@ -1,5 +1,10 @@
 # ![Github Gist Bot](https://res.cloudinary.com/dkxp3eifs/image/upload/c_scale,w_500/v1455829505/gistbot/gistbot_logo.png)
 
+### **GISTBOT** is a smart bot that watches the github gist feed and gives you the power to find in real time repositories that interest you.  
+#### You have to use your **imagination** to take full advantage of it as the uses may vary depending on the person.  
+#### Some may want for example to find all the lastest **Javascript** repositories that use **Angular** where some others may want to find hidden (or not so) **RSA Private Keys** :)
+
+
 Usage
 -
 `node gistbot.js`

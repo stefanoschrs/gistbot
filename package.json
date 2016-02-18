@@ -1,7 +1,7 @@
 {
 	"name": "gistbot",
 	"version": "0.0.2",
-	"description": "Github GIST bot",
+	"description": "GISTBOT is a smart bot that watches the github gist feed and gives you the power to find in real time repositories that interest you",
 	"main": "gistbot.js",
 	"scripts": {},
 	"repository":{
