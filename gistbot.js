@@ -2,8 +2,7 @@ const RegexDigger = require('./regexDigger');
 const https = require('https');
 const fs = require('fs');
 
-const date = `${(new Date()).getDate()}-${(new Date()).getMonth()}-${(new Date()).getFullYear()}`;
-
+var date;
 var config;
 try{
 	config = require('./config');
@@ -50,7 +49,12 @@ function isGistNew(gist, done){
 	}
 }
 
+function logRotate(){
+	date = `${(new Date()).getDate()}-${(new Date()).getMonth()}-${(new Date()).getFullYear()}`;
+}
+
 function fetchData() {
+	logRotate();
 	var req = https.request(options, (res) => {
 		var data = '';
 		res.on('data', (d) => {
