@@ -61,7 +61,12 @@ function fetchData() {
 			data+=d;
 		});
 		res.on('end', () => {
-			data = JSON.parse(data);
+			try{
+				data = JSON.parse(data);
+			}
+			catch(e){
+				return;
+			}
 			if(data.message) return;
 
 			var filtered = data.filter((el)=>{
